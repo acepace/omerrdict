@@ -1,0 +1,4 @@
+omerrdict
+=========
+
+Project for omerr
