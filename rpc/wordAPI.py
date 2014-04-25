@@ -25,6 +25,16 @@ class WordAPIApi(remote.Service):
     '''
         Quick interface to add/remove/list words.
     '''
+    
+    @endpoints.method(  message_types.VoidMessage,WordCollection,
+                        path='listWords',http_method='GET',
+                        name='listWords')
+    def listWords(self,request):
+        allWords = WordEntry.query()
+        wordCount = allWords.count()
+        words = allWords.fetch(wordCount)
+        items = WordCollection(items = [Entry(word=x.word,definition=x.definition) for x in words])
+        return items
 
     @endpoints.method(  Entry,message_types.VoidMessage,
                         path='addWord',http_method='POST',
@@ -66,3 +76,4 @@ class WordAPIApi(remote.Service):
         self.addWord(request)
         return message_types.VoidMessage()
         
+    
