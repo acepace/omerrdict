@@ -30,6 +30,10 @@ class WordAPIApi(remote.Service):
                         path='listWords',http_method='GET',
                         name='listWords')
     def listWords(self,request):
+        '''
+            Returns all the words/definitions in the DB.
+            Horribly inefficient.
+        '''
         allWords = WordEntry.query()
         wordCount = allWords.count()
         words = allWords.fetch(wordCount)
