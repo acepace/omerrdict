@@ -2,6 +2,7 @@
 from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
+from datetime import datetime
 
 from datastore.WordModel import WordEntry
 
@@ -13,12 +14,20 @@ class Entry(messages.Message):
     word = messages.StringField(1,required=True)
     definition = messages.StringField(2)
 
-
 class WordCollection(messages.Message):
     """Collection of Greetings."""
     items = messages.MessageField(Entry, 1, repeated=True)
-
-
+    
+class DTfield(messages.Message):
+    '''
+        I hate my day. So I'm just copying a datetime class.
+    '''
+    year = messages.IntegerField(1,required=True)
+    month = messages.IntegerField(2,required=True)
+    day = messages.IntegerField(3,required=True)
+    hour = messages.IntegerField(4,required=True)
+    minute = messages.IntegerField(5,required=True)
+    
 
 @endpoints.api(name='wordAPI', version='v1')
 class WordAPIApi(remote.Service):
@@ -40,6 +49,23 @@ class WordAPIApi(remote.Service):
         items = WordCollection(items = [Entry(word=x.word,definition=x.definition) for x in words])
         return items
 
+        
+    @endpoints.method(  DTfield,WordCollection,
+                        path='listWordsByDate',http_method='GET',
+                        name='listWordsByDate')
+    def listWordsByDate(self,request):
+        '''
+            Returns request by date filter.
+        '''
+        requestedRange = datetime(   year=request.year,month=request.month,
+                                    day=request.day,hour=request.hour,
+                                    minute=request.minute)
+        allWords = WordEntry.query(WordEntry.addDate < requestedRange)
+        wordCount = allWords.count()
+        words = allWords.fetch(wordCount,projection=[Article.word, Article.definition])
+        items = WordCollection(items = [Entry(word=x.word,definition=x.definition) for x in words])
+        return items
+                        
     @endpoints.method(  Entry,message_types.VoidMessage,
                         path='addWord',http_method='POST',
                         name='AddWord')
@@ -79,5 +105,7 @@ class WordAPIApi(remote.Service):
         self.deleteWord(request)
         self.addWord(request)
         return message_types.VoidMessage()
+        
+   
         
     
