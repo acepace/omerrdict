@@ -60,7 +60,7 @@ class WordAPIApi(remote.Service):
         requestedRange = datetime(   year=request.year,month=request.month,
                                     day=request.day,hour=request.hour,
                                     minute=request.minute)
-        allWords = WordEntry.query(WordEntry.addDate < requestedRange)
+        allWords = WordEntry.query(WordEntry.addDate > requestedRange)
         words = allWords.fetch(5000)
         items = WordCollection(items = [Entry(word=x.word,definition=x.definition) for x in words])
         return items
