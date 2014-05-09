@@ -6,7 +6,7 @@ class WordEntry(ndb.Model):
     '''
     word = ndb.StringProperty(required=True)
     definition = ndb.StringProperty(indexed=False,required=True)
-    signupDate = ndb.DateTimeProperty(indexed=False,auto_now_add=True)
+    addDate = ndb.DateTimeProperty(auto_now_add=True)
     
     def put(self):
         '''
@@ -15,5 +15,6 @@ class WordEntry(ndb.Model):
         currentWord = self.word
         existing = WordEntry.query(WordEntry.word == currentWord).get()
         if existing: #if it exists, check if we're in an update operation, if not, GTFO
-            raise ValueError("Definition already exists.")
+            if existing.key != self.key:
+                raise ValueError("Definition already exists.")
         return super(WordEntry, self).put() #run the putter
