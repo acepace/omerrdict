@@ -62,7 +62,7 @@ class WordAPIApi(remote.Service):
                                     minute=request.minute)
         allWords = WordEntry.query(WordEntry.addDate < requestedRange)
         wordCount = allWords.count()
-        words = allWords.fetch(wordCount,projection=[WordEntry.word, WordEntry.definition])
+        words = allWords.fetch(wordCount)
         items = WordCollection(items = [Entry(word=x.word,definition=x.definition) for x in words])
         return items
                         
